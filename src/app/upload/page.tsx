@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { motion } from "framer-motion";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
@@ -9,6 +9,31 @@ import { UploadCloud, FileImage, X } from "lucide-react";
 export default function UploadPage() {
   const [isDragging, setIsDragging] = useState(false);
   const [files, setFiles] = useState<File[]>([]);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadSuccess, setUploadSuccess] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleBrowseClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      setFiles((prev) => [...prev, ...Array.from(e.target.files)]);
+    }
+  };
+
+  const handleUpload = () => {
+    if (files.length === 0) return;
+    setIsUploading(true);
+    // Simulate upload delay
+    setTimeout(() => {
+      setIsUploading(false);
+      setUploadSuccess(true);
+      setFiles([]);
+      setTimeout(() => setUploadSuccess(false), 3000);
+    }, 2000);
+  };
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
@@ -52,9 +77,18 @@ export default function UploadPage() {
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
+            onClick={handleBrowseClick}
             className={`w-full p-16 rounded-[2rem] border-2 border-dashed transition-all duration-300 flex flex-col items-center justify-center gap-6 cursor-pointer
               ${isDragging ? "border-accent bg-accent/5" : "border-border glass hover:glass-hover"}`}
           >
+            <input 
+              type="file" 
+              ref={fileInputRef} 
+              onChange={handleFileChange} 
+              className="hidden" 
+              multiple 
+              accept="image/jpeg, image/png, image/tiff, .raw" 
+            />
             <div className="w-20 h-20 rounded-full bg-zinc-800/50 flex items-center justify-center">
               <UploadCloud className={`w-10 h-10 ${isDragging ? "text-accent" : "text-muted-foreground"}`} />
             </div>
@@ -89,10 +123,24 @@ export default function UploadPage() {
                 ))}
               </div>
               <div className="mt-8 flex justify-end">
-                <button className="px-8 py-3 rounded-full bg-foreground text-background font-medium hover:bg-accent transition-colors">
-                  Upload Files
+                <button 
+                  onClick={handleUpload}
+                  disabled={isUploading}
+                  className="px-8 py-3 rounded-full bg-foreground text-background font-medium hover:bg-accent transition-colors disabled:opacity-50"
+                >
+                  {isUploading ? "Uploading..." : "Upload Files"}
                 </button>
               </div>
+            </motion.div>
+          )}
+
+          {uploadSuccess && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mt-6 p-4 rounded-xl bg-green-500/20 text-green-400 text-center font-medium border border-green-500/30"
+            >
+              Files uploaded successfully!
             </motion.div>
           )}
         </motion.div>
