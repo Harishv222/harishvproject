@@ -14,10 +14,13 @@ export default function LoginPage() {
     e.preventDefault();
     setIsLoading(true);
     
-    // Simulate API call
+    // Simulate API call and save to localStorage
     setTimeout(() => {
+      localStorage.setItem("user", JSON.stringify({ email: "user@example.com", name: "Guest User" }));
       setIsLoading(false);
       router.push("/");
+      // Force a reload to update Navbar (simple way for now)
+      router.refresh();
     }, 1500);
   };
 

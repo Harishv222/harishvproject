@@ -16,9 +16,22 @@ export default function BookPage() {
     
     // Simulate API call
     setTimeout(() => {
+      const formData = new FormData(e.target as HTMLFormElement);
+      const booking = {
+        name: formData.get("name"),
+        email: formData.get("email"),
+        date: formData.get("date"),
+        time: formData.get("time"),
+        details: formData.get("details"),
+        id: Date.now()
+      };
+      
+      const existingBookings = JSON.parse(localStorage.getItem("bookings") || "[]");
+      localStorage.setItem("bookings", JSON.stringify([...existingBookings, booking]));
+      
       setIsLoading(false);
       setIsSuccess(true);
-      // Reset success state after 5 seconds if they want to book again
+      // Reset success state after 5 seconds
       setTimeout(() => setIsSuccess(false), 5000);
     }, 2000);
   };
@@ -68,7 +81,7 @@ export default function BookPage() {
                     <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground">
                       <User className="w-5 h-5" />
                     </div>
-                    <input required type="text" className="w-full bg-zinc-900/50 border border-border rounded-full py-4 pl-12 pr-6 outline-none focus:border-accent transition-colors" placeholder="John Doe" />
+                    <input required name="name" type="text" className="w-full bg-zinc-900/50 border border-border rounded-full py-4 pl-12 pr-6 outline-none focus:border-accent transition-colors" placeholder="John Doe" />
                   </div>
                 </div>
                 
@@ -78,7 +91,7 @@ export default function BookPage() {
                     <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground">
                       <Mail className="w-5 h-5" />
                     </div>
-                    <input required type="email" className="w-full bg-zinc-900/50 border border-border rounded-full py-4 pl-12 pr-6 outline-none focus:border-accent transition-colors" placeholder="john@example.com" />
+                    <input required name="email" type="email" className="w-full bg-zinc-900/50 border border-border rounded-full py-4 pl-12 pr-6 outline-none focus:border-accent transition-colors" placeholder="john@example.com" />
                   </div>
                 </div>
               </div>
@@ -90,7 +103,7 @@ export default function BookPage() {
                     <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground">
                       <Calendar className="w-5 h-5" />
                     </div>
-                    <input required type="date" className="w-full bg-zinc-900/50 border border-border rounded-full py-4 pl-12 pr-6 outline-none focus:border-accent transition-colors" />
+                    <input required name="date" type="date" className="w-full bg-zinc-900/50 border border-border rounded-full py-4 pl-12 pr-6 outline-none focus:border-accent transition-colors" />
                   </div>
                 </div>
                 
@@ -100,7 +113,7 @@ export default function BookPage() {
                     <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground">
                       <Clock className="w-5 h-5" />
                     </div>
-                    <input required type="time" className="w-full bg-zinc-900/50 border border-border rounded-full py-4 pl-12 pr-6 outline-none focus:border-accent transition-colors" />
+                    <input required name="time" type="time" className="w-full bg-zinc-900/50 border border-border rounded-full py-4 pl-12 pr-6 outline-none focus:border-accent transition-colors" />
                   </div>
                 </div>
               </div>
@@ -110,6 +123,7 @@ export default function BookPage() {
                 <textarea 
                   rows={4} 
                   required
+                  name="details"
                   className="w-full bg-zinc-900/50 border border-border rounded-3xl py-4 px-6 outline-none focus:border-accent transition-colors resize-none" 
                   placeholder="Tell us about the scope of your project, number of images, and desired aesthetic..."
                 ></textarea>

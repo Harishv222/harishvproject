@@ -1,10 +1,30 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { Camera } from "lucide-react";
+import { Camera, LogOut, User } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export function Navbar() {
+  const [user, setUser] = useState<any>(null);
+  const router = useRouter();
+
+  useEffect(() => {
+    // Check for user in localStorage on mount
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    setUser(null);
+    router.push("/");
+    router.refresh();
+  };
+
   return (
     <motion.nav 
       initial={{ y: -100, opacity: 0 }}
@@ -25,12 +45,30 @@ export function Navbar() {
         </div>
 
         <div className="flex items-center gap-4">
-          <Link href="/login" className="hidden sm:block text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-            Log In
-          </Link>
-          <Link href="/signup" className="hidden sm:block px-5 py-2.5 rounded-full glass hover:glass-hover text-sm font-medium transition-colors">
-            Sign Up
-          </Link>
+          {user ? (
+            <>
+              <div className="hidden sm:flex items-center gap-2 text-sm font-medium text-white px-4 py-2 rounded-full bg-zinc-800/50">
+                <User className="w-4 h-4" />
+                {user.name}
+              </div>
+              <button 
+                onClick={handleLogout}
+                className="p-2 rounded-full hover:bg-zinc-800 transition-colors text-muted-foreground hover:text-white"
+                title="Log Out"
+              >
+                <LogOut className="w-5 h-5" />
+              </button>
+            </>
+          ) : (
+            <>
+              <Link href="/login" className="hidden sm:block text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+                Log In
+              </Link>
+              <Link href="/signup" className="hidden sm:block px-5 py-2.5 rounded-full glass hover:glass-hover text-sm font-medium transition-colors">
+                Sign Up
+              </Link>
+            </>
+          )}
           <Link href="/book" className="px-5 py-2.5 rounded-full bg-foreground text-background text-sm font-medium hover:bg-accent transition-colors">
             Book Session
           </Link>

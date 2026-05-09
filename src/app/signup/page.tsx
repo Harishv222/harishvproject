@@ -14,10 +14,12 @@ export default function SignupPage() {
     e.preventDefault();
     setIsLoading(true);
     
-    // Simulate API call
+    // Simulate API call and save to localStorage
     setTimeout(() => {
+      localStorage.setItem("user", JSON.stringify({ email: "newuser@example.com", name: "New Member" }));
       setIsLoading(false);
-      router.push("/login");
+      router.push("/");
+      router.refresh();
     }, 1500);
   };
 
