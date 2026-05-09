@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { Calendar, Clock, Mail, User, Loader2, CheckCircle2 } from "lucide-react";
+import { supabase } from "@/lib/supabase";
 
 export default function BookPage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -14,26 +15,29 @@ export default function BookPage() {
     e.preventDefault();
     setIsLoading(true);
     
-    // Simulate API call
-    setTimeout(() => {
-      const formData = new FormData(e.target as HTMLFormElement);
-      const booking = {
-        name: formData.get("name"),
-        email: formData.get("email"),
-        date: formData.get("date"),
-        time: formData.get("time"),
-        details: formData.get("details"),
-        id: Date.now()
-      };
-      
-      const existingBookings = JSON.parse(localStorage.getItem("bookings") || "[]");
-      localStorage.setItem("bookings", JSON.stringify([...existingBookings, booking]));
-      
+    const formData = new FormData(e.target as HTMLFormElement);
+    const bookingData = {
+      name: formData.get("name"),
+      email: formData.get("email"),
+      date: formData.get("date"),
+      time: formData.get("time"),
+      details: formData.get("details"),
+    };
+
+    const { error } = await supabase
+      .from("bookings")
+      .insert([bookingData]);
+
+    if (error) {
+      alert(error.message);
       setIsLoading(false);
-      setIsSuccess(true);
-      // Reset success state after 5 seconds
-      setTimeout(() => setIsSuccess(false), 5000);
-    }, 2000);
+      return;
+    }
+
+    setIsLoading(false);
+    setIsSuccess(true);
+    // Reset success state after 5 seconds
+    setTimeout(() => setIsSuccess(false), 5000);
   };
 
   return (

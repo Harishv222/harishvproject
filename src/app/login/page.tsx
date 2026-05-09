@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { Camera, Mail, Lock, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabase";
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -14,14 +15,24 @@ export default function LoginPage() {
     e.preventDefault();
     setIsLoading(true);
     
-    // Simulate API call and save to localStorage
-    setTimeout(() => {
-      localStorage.setItem("user", JSON.stringify({ email: "user@example.com", name: "Guest User" }));
+    const formData = new FormData(e.target as HTMLFormElement);
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
+
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) {
+      alert(error.message);
       setIsLoading(false);
-      router.push("/");
-      // Force a reload to update Navbar (simple way for now)
-      router.refresh();
-    }, 1500);
+      return;
+    }
+
+    setIsLoading(false);
+    router.push("/");
+    router.refresh();
   };
 
   return (
@@ -56,7 +67,7 @@ export default function LoginPage() {
                 <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground">
                   <Mail className="w-5 h-5" />
                 </div>
-                <input required type="email" className="w-full bg-zinc-900/50 border border-border rounded-full py-3.5 pl-12 pr-6 outline-none focus:border-accent transition-colors" placeholder="hello@example.com" />
+                <input required name="email" type="email" className="w-full bg-zinc-900/50 border border-border rounded-full py-3.5 pl-12 pr-6 outline-none focus:border-accent transition-colors" placeholder="hello@example.com" />
               </div>
             </div>
 
@@ -69,7 +80,7 @@ export default function LoginPage() {
                 <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground">
                   <Lock className="w-5 h-5" />
                 </div>
-                <input required type="password" className="w-full bg-zinc-900/50 border border-border rounded-full py-3.5 pl-12 pr-6 outline-none focus:border-accent transition-colors" placeholder="••••••••" />
+                <input required name="password" type="password" className="w-full bg-zinc-900/50 border border-border rounded-full py-3.5 pl-12 pr-6 outline-none focus:border-accent transition-colors" placeholder="••••••••" />
               </div>
             </div>
 

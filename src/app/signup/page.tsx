@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Camera, Mail, Lock, User, Loader2 } from "lucide-react";
+import { supabase } from "@/lib/supabase";
 
 export default function SignupPage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -14,13 +15,30 @@ export default function SignupPage() {
     e.preventDefault();
     setIsLoading(true);
     
-    // Simulate API call and save to localStorage
-    setTimeout(() => {
-      localStorage.setItem("user", JSON.stringify({ email: "newuser@example.com", name: "New Member" }));
+    const formData = new FormData(e.target as HTMLFormElement);
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
+    const fullName = formData.get("fullName") as string;
+
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          full_name: fullName,
+        },
+      },
+    });
+
+    if (error) {
+      alert(error.message);
       setIsLoading(false);
-      router.push("/");
-      router.refresh();
-    }, 1500);
+      return;
+    }
+
+    setIsLoading(false);
+    alert("Check your email for the confirmation link!");
+    router.push("/login");
   };
 
   return (
@@ -55,7 +73,7 @@ export default function SignupPage() {
                 <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground">
                   <User className="w-5 h-5" />
                 </div>
-                <input required type="text" className="w-full bg-zinc-900/50 border border-border rounded-full py-3.5 pl-12 pr-6 outline-none focus:border-accent transition-colors" placeholder="John Doe" />
+                <input required name="fullName" type="text" className="w-full bg-zinc-900/50 border border-border rounded-full py-3.5 pl-12 pr-6 outline-none focus:border-accent transition-colors" placeholder="John Doe" />
               </div>
             </div>
 
@@ -65,7 +83,7 @@ export default function SignupPage() {
                 <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground">
                   <Mail className="w-5 h-5" />
                 </div>
-                <input required type="email" className="w-full bg-zinc-900/50 border border-border rounded-full py-3.5 pl-12 pr-6 outline-none focus:border-accent transition-colors" placeholder="hello@example.com" />
+                <input required name="email" type="email" className="w-full bg-zinc-900/50 border border-border rounded-full py-3.5 pl-12 pr-6 outline-none focus:border-accent transition-colors" placeholder="hello@example.com" />
               </div>
             </div>
 
@@ -75,7 +93,7 @@ export default function SignupPage() {
                 <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground">
                   <Lock className="w-5 h-5" />
                 </div>
-                <input required type="password" className="w-full bg-zinc-900/50 border border-border rounded-full py-3.5 pl-12 pr-6 outline-none focus:border-accent transition-colors" placeholder="••••••••" />
+                <input required name="password" type="password" className="w-full bg-zinc-900/50 border border-border rounded-full py-3.5 pl-12 pr-6 outline-none focus:border-accent transition-colors" placeholder="••••••••" />
               </div>
             </div>
 
