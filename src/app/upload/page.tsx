@@ -20,7 +20,8 @@ export default function UploadPage() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = e.target.files;
     if (selectedFiles && selectedFiles.length > 0) {
-      setFiles((prev) => [...prev, ...Array.from(selectedFiles)]);
+      const filesArray = Array.from(selectedFiles);
+      setFiles((prev) => [...prev, ...filesArray]);
     }
   };
 
@@ -51,7 +52,8 @@ export default function UploadPage() {
     setIsDragging(false);
     const droppedFiles = e.dataTransfer.files;
     if (droppedFiles && droppedFiles.length > 0) {
-      setFiles((prev) => [...prev, ...Array.from(droppedFiles)]);
+      const filesArray = Array.from(droppedFiles);
+      setFiles((prev) => [...prev, ...filesArray]);
     }
   };
 
