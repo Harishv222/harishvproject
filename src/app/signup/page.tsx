@@ -13,6 +13,13 @@ export default function SignupPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    if (!supabaseUrl || supabaseUrl.includes("your-project-url")) {
+      alert("Error: Supabase URL is not set correctly in Vercel settings.");
+      return;
+    }
+
     setIsLoading(true);
     
     const formData = new FormData(e.target as HTMLFormElement);
