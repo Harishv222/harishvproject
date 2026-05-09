@@ -1,10 +1,26 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { Camera, Mail, Lock, User } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Camera, Mail, Lock, User, Loader2 } from "lucide-react";
 
 export default function SignupPage() {
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    
+    // Simulate API call
+    setTimeout(() => {
+      setIsLoading(false);
+      router.push("/login");
+    }, 1500);
+  };
+
   return (
     <div className="min-h-screen flex flex-col relative overflow-hidden">
       <div className="absolute top-0 left-0 p-6 z-50">
@@ -30,14 +46,14 @@ export default function SignupPage() {
             <p className="text-sm text-muted-foreground">Join Lumina Edit Studio to start your journey.</p>
           </div>
 
-          <form className="flex flex-col gap-6">
+          <form onSubmit={handleSubmit} className="flex flex-col gap-6">
             <div className="flex flex-col gap-2">
               <label className="text-xs font-medium text-muted-foreground ml-2">Full Name</label>
               <div className="relative">
                 <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground">
                   <User className="w-5 h-5" />
                 </div>
-                <input type="text" className="w-full bg-zinc-900/50 border border-border rounded-full py-3.5 pl-12 pr-6 outline-none focus:border-accent transition-colors" placeholder="John Doe" />
+                <input required type="text" className="w-full bg-zinc-900/50 border border-border rounded-full py-3.5 pl-12 pr-6 outline-none focus:border-accent transition-colors" placeholder="John Doe" />
               </div>
             </div>
 
@@ -47,7 +63,7 @@ export default function SignupPage() {
                 <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground">
                   <Mail className="w-5 h-5" />
                 </div>
-                <input type="email" className="w-full bg-zinc-900/50 border border-border rounded-full py-3.5 pl-12 pr-6 outline-none focus:border-accent transition-colors" placeholder="hello@example.com" />
+                <input required type="email" className="w-full bg-zinc-900/50 border border-border rounded-full py-3.5 pl-12 pr-6 outline-none focus:border-accent transition-colors" placeholder="hello@example.com" />
               </div>
             </div>
 
@@ -57,12 +73,21 @@ export default function SignupPage() {
                 <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground">
                   <Lock className="w-5 h-5" />
                 </div>
-                <input type="password" className="w-full bg-zinc-900/50 border border-border rounded-full py-3.5 pl-12 pr-6 outline-none focus:border-accent transition-colors" placeholder="••••••••" />
+                <input required type="password" className="w-full bg-zinc-900/50 border border-border rounded-full py-3.5 pl-12 pr-6 outline-none focus:border-accent transition-colors" placeholder="••••••••" />
               </div>
             </div>
 
-            <button type="button" className="mt-2 w-full py-4 rounded-full bg-foreground text-background font-medium hover:bg-accent hover:scale-[1.02] transition-all duration-300">
-              Sign Up
+            <button 
+              disabled={isLoading}
+              type="submit" 
+              className="mt-2 w-full py-4 rounded-full bg-foreground text-background font-medium hover:bg-accent hover:scale-[1.02] transition-all duration-300 flex items-center justify-center gap-2"
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  Creating Account...
+                </>
+              ) : "Sign Up"}
             </button>
           </form>
 
